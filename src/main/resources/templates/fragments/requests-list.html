@@ -1,0 +1,43 @@
+<div class="container mt-4">
+    <div class="row g-3">
+
+        <div class="col-md-6" th:each="app : ${applications}">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+
+                    <h5 class="card-title">
+                        <span th:if="${!app.handled}" class="text-danger fw-bold">
+                            *(Новая)
+                        </span>
+                        Заявка от
+                        <span th:text="${app.userName}"></span>
+                    </h5>
+
+                    <p class="mb-2">
+                        <strong>Курс:</strong>
+                        <span class="text-secondary"
+                              th:text="${app.courseName}"></span>
+                    </p>
+
+                    <p class="mb-3"
+                       th:text="${app.commentary}">
+                    </p>
+
+                    <div class="d-flex align-items-center justify-content-between">
+                        <span>
+                            <strong>Тел:</strong>
+                            <span th:text="${app.phone}"></span>
+                        </span>
+
+                        <a th:href="@{/applications/{id}(id=${app.id})}"
+                           class="text-decoration-none">
+                            Подробнее
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

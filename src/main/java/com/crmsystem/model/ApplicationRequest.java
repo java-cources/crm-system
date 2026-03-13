@@ -16,4 +16,16 @@ public class ApplicationRequest {
     private String commentary;
     private String phone;
     private boolean handled;
+
+    @Override
+    public String toString() {
+        return "ApplicationRequest{" +
+                "id=" + id +
+                ", userName='" + userName + '\'' +
+                ", courseName='" + courseName + '\'' +
+                ", commentary='" + commentary + '\'' +
+                ", phone='" + phone + '\'' +
+                ", handled=" + handled +
+                '}';
+    }
 }
