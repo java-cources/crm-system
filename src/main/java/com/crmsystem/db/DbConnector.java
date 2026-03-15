@@ -24,6 +24,17 @@ public class DbConnector {
         }
     }
 
+    private static ApplicationRequest mapApplicationRequest(ResultSet resultSet) throws Exception {
+        ApplicationRequest applicationRequest = new ApplicationRequest();
+        applicationRequest.setId(resultSet.getLong("id"));
+        applicationRequest.setUserName(resultSet.getString("user_name"));
+        applicationRequest.setCourseName(resultSet.getString("course_name"));
+        applicationRequest.setCommentary(resultSet.getString("commentary"));
+        applicationRequest.setPhone(resultSet.getString("phone"));
+        applicationRequest.setHandled(resultSet.getBoolean("handled"));
+        return applicationRequest;
+    }
+
     public static ArrayList<ApplicationRequest> getAllApplications() {
         ArrayList<ApplicationRequest> applicationRequests = new ArrayList<>();
 
@@ -33,17 +44,49 @@ public class DbConnector {
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
-                ApplicationRequest request = new ApplicationRequest();
-
-                request.setId(resultSet.getLong("id"));
-                request.setUserName(resultSet.getString("user_name"));
-                request.setCourseName(resultSet.getString("course_name"));
-                request.setCommentary(resultSet.getString("commentary"));
-                request.setPhone(resultSet.getString("phone"));
-                request.setHandled(resultSet.getBoolean("handled"));
-
+                ApplicationRequest request = mapApplicationRequest(resultSet);
                 applicationRequests.add(request);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return applicationRequests;
+    }
+
+    public static ArrayList<ApplicationRequest> getUnhandledApplications() {
+        ArrayList<ApplicationRequest> applicationRequests = new ArrayList<>();
+
+        try {
+            PreparedStatement statement = connection.prepareStatement("SELECT * from application_requests WHERE handled = false");
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                ApplicationRequest request = mapApplicationRequest(resultSet);
+                applicationRequests.add(request);
+            }
+
+            statement.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return applicationRequests;
+    }
+
+    public static ArrayList<ApplicationRequest> getHandledApplications() {
+        ArrayList<ApplicationRequest> applicationRequests = new ArrayList<>();
+
+        try {
+            PreparedStatement statement = connection.prepareStatement("SELECT * from application_requests WHERE handled = true");
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                ApplicationRequest request = mapApplicationRequest(resultSet);
+                applicationRequests.add(request);
+            }
+
+            statement.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -76,12 +119,7 @@ public class DbConnector {
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
-                applicationRequest.setId(resultSet.getLong("id"));
-                applicationRequest.setUserName(resultSet.getString("user_name"));
-                applicationRequest.setCourseName(resultSet.getString("course_name"));
-                applicationRequest.setCommentary(resultSet.getString("commentary"));
-                applicationRequest.setPhone(resultSet.getString("phone"));
-                applicationRequest.setHandled(resultSet.getBoolean("handled"));
+                applicationRequest = mapApplicationRequest(resultSet);
 
                 statement.close();
             }

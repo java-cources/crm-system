@@ -24,6 +24,30 @@ public class MainController {
     }
 
     /**
+     * Главная страница со списком заявок
+     * @param model
+     * @return - редирект на главную
+     */
+    @GetMapping("/new-applications")
+    public String getNewApplicationsPage(Model model) {
+        model.addAttribute("applications", DbConnector.getUnhandledApplications());
+
+        return "pages/index";
+    }
+
+    /**
+     * Главная страница со списком заявок
+     * @param model
+     * @return - редирект на главную
+     */
+    @GetMapping("/handled-applications")
+    public String getHandledApplicationsPage(Model model) {
+        model.addAttribute("applications", DbConnector.getHandledApplications());
+
+        return "pages/index";
+    }
+
+    /**
      * Страница добавления заявки
      * @return - возвращаем страницу добавления
      */
