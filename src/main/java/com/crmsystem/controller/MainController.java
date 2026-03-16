@@ -52,7 +52,9 @@ public class MainController {
      * @return - возвращаем страницу добавления
      */
     @GetMapping("/add-application")
-    public String getAddApplicationPage() {
+    public String getAddApplicationPage(Model model) {
+        model.addAttribute("courses", DbConnector.getAllCourses());
+
         return "pages/add-application";
     }
 
@@ -71,9 +73,8 @@ public class MainController {
     public String getApplicationDetailsPage(@PathVariable Long id, Model model) {
         ApplicationRequest applicationRequest = DbConnector.getApplicationById(id);
 
-        System.out.println(applicationRequest.toString());
-
         model.addAttribute("application", applicationRequest);
+        model.addAttribute("courses", DbConnector.getAllCourses());
 
         return "pages/application-details";
     }

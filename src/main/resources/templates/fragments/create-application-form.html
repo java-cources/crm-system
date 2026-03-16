@@ -17,14 +17,11 @@
                 <!-- Курс -->
                 <div class="mb-3">
                     <label class="form-label">Курс :</label>
-                    <select class="form-select" name="courseName" required>
-                        <option value="">Выберите курс</option>
-                        <option value="Java Standard Edition">Java Standard Edition</option>
-                        <option value="Java Pro">Java Pro</option>
-                        <option value="Web Technologies">Web Technologies</option>
-                        <option value="Python Programming Language">Python Programming Language</option>
-                        <option value="UX/UI Design">UX/UI Design</option>
-                        <option value="Django Framework">Django Framework</option>
+                    <select class="form-select" name="courseId" required>
+                        <option th:each="course : ${courses}"
+                                th:value="${course.id}"
+                                th:text="${course.name + ' - ' + course.price}">
+                        </option>
                     </select>
                 </div>
 

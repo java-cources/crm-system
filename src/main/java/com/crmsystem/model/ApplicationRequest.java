@@ -12,20 +12,23 @@ import lombok.Setter;
 public class ApplicationRequest {
     private Long id;
     private String userName;
-    private String courseName;
     private String commentary;
     private String phone;
     private boolean handled;
+    private Long courseId;
+    private Course course;
+
 
     @Override
     public String toString() {
         return "ApplicationRequest{" +
                 "id=" + id +
                 ", userName='" + userName + '\'' +
-                ", courseName='" + courseName + '\'' +
                 ", commentary='" + commentary + '\'' +
                 ", phone='" + phone + '\'' +
                 ", handled=" + handled +
+                ", courseId=" + courseId +
+                ", course=" + course +
                 '}';
     }
 }

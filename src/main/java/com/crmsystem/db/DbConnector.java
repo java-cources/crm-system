@@ -1,6 +1,7 @@
 package com.crmsystem.db;
 
 import com.crmsystem.model.ApplicationRequest;
+import com.crmsystem.model.Course;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -28,10 +29,18 @@ public class DbConnector {
         ApplicationRequest applicationRequest = new ApplicationRequest();
         applicationRequest.setId(resultSet.getLong("id"));
         applicationRequest.setUserName(resultSet.getString("user_name"));
-        applicationRequest.setCourseName(resultSet.getString("course_name"));
         applicationRequest.setCommentary(resultSet.getString("commentary"));
         applicationRequest.setPhone(resultSet.getString("phone"));
         applicationRequest.setHandled(resultSet.getBoolean("handled"));
+        applicationRequest.setCourseId(resultSet.getLong("course_id"));
+
+        Course course = new Course();
+        course.setId(resultSet.getLong("course_id"));
+        course.setName(resultSet.getString("name"));
+        course.setPrice(resultSet.getInt("price"));
+        course.setDescription(resultSet.getString("description"));
+
+        applicationRequest.setCourse(course);
         return applicationRequest;
     }
 
@@ -39,7 +48,9 @@ public class DbConnector {
         ArrayList<ApplicationRequest> applicationRequests = new ArrayList<>();
 
         try {
-            PreparedStatement statement = connection.prepareStatement("SELECT * from application_requests");
+            PreparedStatement statement = connection.prepareStatement(
+                    "SELECT * from application_requests ar JOIN courses c on ar.course_id = c.id"
+            );
 
             ResultSet resultSet = statement.executeQuery();
 
@@ -57,7 +68,7 @@ public class DbConnector {
         ArrayList<ApplicationRequest> applicationRequests = new ArrayList<>();
 
         try {
-            PreparedStatement statement = connection.prepareStatement("SELECT * from application_requests WHERE handled = false");
+            PreparedStatement statement = connection.prepareStatement("SELECT * from application_requests ar INNER JOIN courses c on ar.course_id = c.id WHERE ar.handled = false");
 
             ResultSet resultSet = statement.executeQuery();
 
@@ -77,7 +88,7 @@ public class DbConnector {
         ArrayList<ApplicationRequest> applicationRequests = new ArrayList<>();
 
         try {
-            PreparedStatement statement = connection.prepareStatement("SELECT * from application_requests WHERE handled = true");
+            PreparedStatement statement = connection.prepareStatement("SELECT * from application_requests ar INNER JOIN courses c on ar.course_id = c.id WHERE ar.handled = true");
 
             ResultSet resultSet = statement.executeQuery();
 
@@ -95,12 +106,12 @@ public class DbConnector {
 
     public static void addApplication(ApplicationRequest applicationRequest) {
         try {
-            PreparedStatement statement = connection.prepareStatement("INSERT INTO application_requests (user_name, course_name, commentary, phone, handled) VALUES (?, ?, ?, ?, ?)");
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO application_requests (user_name, commentary, phone, handled, course_id) VALUES (?, ?, ?, ?, ?)");
             statement.setString(1, applicationRequest.getUserName());
-            statement.setString(2, applicationRequest.getCourseName());
-            statement.setString(3, applicationRequest.getCommentary());
-            statement.setString(4, applicationRequest.getPhone());
-            statement.setBoolean(5, applicationRequest.isHandled());
+            statement.setString(2, applicationRequest.getCommentary());
+            statement.setString(3, applicationRequest.getPhone());
+            statement.setBoolean(4, applicationRequest.isHandled());
+            statement.setLong(5, applicationRequest.getCourseId());
 
             statement.executeUpdate();
             statement.close();
@@ -113,7 +124,7 @@ public class DbConnector {
         ApplicationRequest applicationRequest = new ApplicationRequest();
 
         try {
-            PreparedStatement statement = connection.prepareStatement("SELECT * from application_requests WHERE id = ?");
+            PreparedStatement statement = connection.prepareStatement("SELECT * from application_requests ar INNER JOIN courses c on ar.course_id = c.id WHERE ar.id = ?");
             statement.setLong(1, id);
 
             ResultSet resultSet = statement.executeQuery();
@@ -134,15 +145,15 @@ public class DbConnector {
         try {
             PreparedStatement statement = connection.prepareStatement(
                     "UPDATE application_requests " +
-                            "SET user_name = ?, course_name = ?, commentary = ?, phone = ?, handled = ? " +
+                            "SET user_name = ?, commentary = ?, phone = ?, handled = ?, course_id = ? " +
                             "WHERE id = ?"
             );
 
             statement.setString(1, applicationRequest.getUserName());
-            statement.setString(2, applicationRequest.getCourseName());
-            statement.setString(3, applicationRequest.getCommentary());
-            statement.setString(4, applicationRequest.getPhone());
-            statement.setBoolean(5, applicationRequest.isHandled());
+            statement.setString(2, applicationRequest.getCommentary());
+            statement.setString(3, applicationRequest.getPhone());
+            statement.setBoolean(4, applicationRequest.isHandled());
+            statement.setLong(5, applicationRequest.getCourseId());
             statement.setLong(6, applicationRequest.getId());
 
             statement.executeUpdate();
@@ -164,5 +175,34 @@ public class DbConnector {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static ArrayList<Course> getAllCourses() {
+        ArrayList<Course> courses = new ArrayList<>();
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(
+                    "SELECT * from courses"
+            );
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                Course course = new Course();
+
+                course.setId(resultSet.getLong("id"));
+                course.setName(resultSet.getString("name"));
+                course.setPrice(resultSet.getInt("price"));
+                course.setDescription(resultSet.getString("description"));
+
+                courses.add(course);
+            }
+
+            statement.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return courses;
     }
 }
